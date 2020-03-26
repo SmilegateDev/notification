@@ -217,6 +217,7 @@ router.post('/like',
 
         client.get(newNotification.rec_user, function(err, socketId) {
           if (err) throw err;
+          console.log(socketId);
           app.io.to(socketId).emit('like',{noticeCount:count});
         });
         res.json({success:true});
