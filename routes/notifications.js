@@ -82,7 +82,7 @@ router.post('/reply',
     newNotification.status = "reply";
     newNotification.id = res.locals.lastId + 1; // 알림 index 업데이트
     newNotification.contents = req.body.send_user+"님이 회원님의 게시물에 댓글을 남기셨습니다 : "+req.body.replyContents;
-    newNotification.save(function(err, notification){
+    newNotification.save(async function(err, notification){
       if(err) {
         res.status(500);
         res.json({success:false, message:err});
@@ -94,7 +94,7 @@ router.post('/reply',
 
        //io.sockets.on('connection', function(socket) {
        // socket.on("reply", function(msg) {
-        user.increment('noticeCount',
+        await user.increment('noticeCount',
         {
           where: {
             id:req.body.rec_user
@@ -105,12 +105,23 @@ router.post('/reply',
             count = result
           }
         });
+        await user.findOne({
+          where:{id:req.body.rec_user},
+          attributes:['noticeCount']
+        },
+        )
+        .then(result=>{
+          count=result;
+        });
+        count=JSON.stringify(count);
+        count=JSON.parse(count).noticeCount;
         // Fetch the socket id from Redis
         client.get(newNotification.rec_user, function(err, socketId) {
             if (err) throw err;
             //io.sockets.socket(socketId).emit('reply'); => 1.0 이전버전 구버전 함수로 버그 발생
             const socket = req.app.locals.io
             socket.to(socketId).emit('reply',{noticeCount:count});
+            //console.log(count)
         });
             
         //  });
@@ -142,7 +153,7 @@ router.post('/follow',
     newNotification.id = res.locals.lastId + 1;
     newNotification.status = "follow";
     newNotification.contents = req.body.send_user+"님이 회원님을 팔로우 하기 시작했습니다";
-    newNotification.save(function(err, notification){
+    newNotification.save(async function(err, notification){
       if(err) {
         res.status(500);
         res.json({success:false, message:err});
@@ -151,7 +162,7 @@ router.post('/follow',
         //wss.clients.forEach(function each(client) {
         //  client.send("noti updated");
         //});
-        user.increment('noticeCount',
+        await user.increment('noticeCount',
         {
           where: {
             id:req.body.rec_user
@@ -162,6 +173,16 @@ router.post('/follow',
             count = result
           }
         });
+        await user.findOne({
+          where:{id:req.body.rec_user},
+          attributes:['noticeCount']
+        },
+        )
+        .then(result=>{
+          count=result;
+        });
+        count=JSON.stringify(count);
+        count=JSON.parse(count).noticeCount;
 
         client.get(newNotification.rec_user, function(err, socketId) {
           if (err) throw err;
@@ -195,7 +216,7 @@ router.post('/like',
     newNotification.id = res.locals.lastId + 1;
     newNotification.status = "like";
     newNotification.contents = req.body.send_user+"님이 회원님의 게시물을 좋아합니다";
-    newNotification.save(function(err, notification){
+    newNotification.save(async function(err, notification){
       if(err) {
         res.status(500);
         res.json({success:false, message:err});
@@ -204,7 +225,7 @@ router.post('/like',
         //wss.clients.forEach(function each(client) {
         //  client.send("noti updated");
         //});
-        user.increment('noticeCount',
+        await user.increment('noticeCount',
         {
           where: {
             id:req.body.rec_user
@@ -215,6 +236,16 @@ router.post('/like',
             count = result
           }
         });
+        await user.findOne({
+          where:{id:req.body.rec_user},
+          attributes:['noticeCount']
+        },
+        )
+        .then(result=>{
+          count=result;
+        });
+        count=JSON.stringify(count);
+        count=JSON.parse(count).noticeCount;
 
         client.get(newNotification.rec_user, function(err, socketId) {
           if (err) throw err;
