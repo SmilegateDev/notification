@@ -80,6 +80,9 @@ app.io.on('connection', function(socket) {
     });
   });
 })
+
+app.locals.io = app.io;
+
 module.exports = app;
 
 

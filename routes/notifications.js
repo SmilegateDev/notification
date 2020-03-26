@@ -7,8 +7,6 @@ var Notification = require('../schemas/Notification');
 var {user} = require('../models')
 var nJwt = require('njwt');
 var client = require('../cache_redis');
-var app = require('../app');
-app.io = require('socket.io')();
 require('dotenv').config();
 var tokenValues;
 var status;
@@ -111,9 +109,8 @@ router.post('/reply',
         client.get(newNotification.rec_user, function(err, socketId) {
             if (err) throw err;
             //io.sockets.socket(socketId).emit('reply'); => 1.0 이전버전 구버전 함수로 버그 발생
-            app.io.on('connection', function(socket) {
-              socket.to(socketId).emit('reply',{noticeCount:count});
-            })
+            const socket = req.app.locals.io
+            socket.to(socketId).emit('reply',{noticeCount:count});
         });
             
         //  });
@@ -168,10 +165,9 @@ router.post('/follow',
 
         client.get(newNotification.rec_user, function(err, socketId) {
           if (err) throw err;
-
-          app.io.on('connection', function(socket) {
-            socket.to(socketId).emit('follow',{noticeCount:count});
-          })
+          
+          const socket = req.app.locals.io;
+          socket.to(socketId).emit('follow',{noticeCount:count});
         });
         res.json({success:true});
       }
@@ -224,9 +220,8 @@ router.post('/like',
           if (err) throw err;
           console.log(socketId);
 
-          app.io.on('connection', function(socket) {
-            socket.to(socketId).emit('like',{noticeCount:count});
-          })
+          const socket = req.app.locals.io;
+          socket.to(socketId).emit('like',{noticeCount:count});
         });
         res.json({success:true});
       }
