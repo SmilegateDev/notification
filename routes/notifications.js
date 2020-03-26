@@ -99,12 +99,8 @@ router.post('/reply',
           where: {
             id:req.body.rec_user
           }
-        })
-        .then(result =>{
-          if(result != null){
-            count = result
-          }
         });
+        
         await user.findOne({
           where:{id:req.body.rec_user},
           attributes:['noticeCount']
@@ -167,12 +163,8 @@ router.post('/follow',
           where: {
             id:req.body.rec_user
           }
-        })
-        .then(result =>{
-          if(result != null){
-            count = result
-          }
         });
+        
         await user.findOne({
           where:{id:req.body.rec_user},
           attributes:['noticeCount']
@@ -230,12 +222,8 @@ router.post('/like',
           where: {
             id:req.body.rec_user
           }
-        })
-        .then(result =>{
-          if(result != null){
-            count = result
-          }
         });
+       
         await user.findOne({
           where:{id:req.body.rec_user},
           attributes:['noticeCount']
@@ -336,12 +324,8 @@ router.delete('/delNoti/:id',
             where: {
               id:req.params.id
             }
-          })
-          .then(result =>{
-            if(result != null){
-              count = result
-            }
           });
+         
           
           res.json({success:true});
         }
