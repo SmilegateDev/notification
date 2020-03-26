@@ -111,7 +111,9 @@ router.post('/reply',
         client.get(newNotification.rec_user, function(err, socketId) {
             if (err) throw err;
             //io.sockets.socket(socketId).emit('reply'); => 1.0 이전버전 구버전 함수로 버그 발생
-            app.io.to(socketId).emit('reply',{noticeCount:count});
+            app.io.on('connection', function(socket) {
+              socket.to(socketId).emit('reply',{noticeCount:count});
+            })
         });
             
         //  });
@@ -166,7 +168,10 @@ router.post('/follow',
 
         client.get(newNotification.rec_user, function(err, socketId) {
           if (err) throw err;
-          app.io.to(socketId).emit('follow',{noticeCount:count});
+
+          app.io.on('connection', function(socket) {
+            socket.to(socketId).emit('follow',{noticeCount:count});
+          })
         });
         res.json({success:true});
       }
@@ -218,7 +223,10 @@ router.post('/like',
         client.get(newNotification.rec_user, function(err, socketId) {
           if (err) throw err;
           console.log(socketId);
-          app.io.to(socketId).emit('like',{noticeCount:count});
+
+          app.io.on('connection', function(socket) {
+            socket.to(socketId).emit('like',{noticeCount:count});
+          })
         });
         res.json({success:true});
       }
